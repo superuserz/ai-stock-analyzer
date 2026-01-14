@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Stock Analyzer - Futuristic Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            animation: backgroundShift 20s ease-in-out infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { transform: translateX(0) translateY(0); }
+            25% { transform: translateX(-20px) translateY(-10px); }
+            50% { transform: translateX(20px) translateY(10px); }
+            75% { transform: translateX(-10px) translateY(20px); }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0a0a0;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        .main-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: fadeInUp 1s ease-out 0.2s both;
+            transition: all 0.3s ease;
+        }
+
+        .main-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .input-section {
+            margin-bottom: 40px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 20px 25px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            font-size: 18px;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .input-field::placeholder {
+            color: #888;
+        }
+
+        .analyze-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analyze-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .analyze-btn:hover::before {
+            left: 100%;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .analyze-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .analyze-btn:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .popular-stocks {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 25px;
+            color: #e0e0e0;
+        }
+
+        .stock-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .stock-btn {
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stock-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stock-btn:hover::before {
+            opacity: 1;
+        }
+
+        .stock-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            border-color: #667eea;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .stock-btn:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .result-container {
+            margin-top: 40px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.5s ease;
+        }
+
+        .result-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        .company-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .company-name {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .ticker-symbol {
+            font-size: 1.1rem;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .price-section {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .current-price {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .price-change {
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .price-change.positive {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .price-change.negative {
+            background: rgba(244, 67, 54, 0.2);
+            color: #F44336;
+        }
+
+        .scores-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+
+        .score-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .score-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-shadow: 0 0 15px currentColor;
+        }
+
+        .score-excellent { color: #4CAF50; }
+        .score-good { color: #8BC34A; }
+        .score-average { color: #FF9800; }
+        .score-poor { color: #F44336; }
+
+        .recommendation-card {
+            text-align: center;
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 35px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .recommendation-buy {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(139, 195, 74, 0.3));
+            border: 2px solid #4CAF50;
+            color: #4CAF50;
+            box-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
+        }
+
+        .recommendation-sell {
+            background: linear-gradient(135deg, rgba(244, 67, 54, 0.3), rgba(255, 87, 34, 0.3));
+            border: 2px solid #F44336;
+            color: #F44336;
+            box-shadow: 0 0 30px rgba(244, 67, 54, 0.3);
+        }
+
+        .analysis-details {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .details-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #e0e0e0;
+            display: flex;
+            align-items: center;
+        }
+
+        .details-title::before {
+            content: '📊';
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .reason-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            animation: fadeInLeft 0.5s ease-out;
+        }
+
+        .reason-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+        }
+
+        .reason-bullet {
+            color: #667eea;
+            margin-right: 12px;
+            font-size: 1.2rem;
+            margin-top: 2px;
+        }
+
+        .reason-text {
+            color: #d0d0d0;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .timestamp {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 25px;
+            font-style: italic;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .loading-text {
+            color: #aaa;
+            font-size: 1.1rem;
+        }
+
+        .error {
+            background: linear-gradient(135deg, rgba(244, 67, 54, 0.2), rgba(255, 87, 34, 0.2));
+            border: 1px solid rgba(244, 67, 54, 0.5);
+            color: #ff6b6b;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .glow-effect {
+            position: relative;
+        }
+
+        .glow-effect::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #667eea);
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .glow-effect:hover::after {
+            opacity: 0.7;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .main-card {
+                padding: 25px;
+            }
+            
+            .stock-grid {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+                gap: 10px;
+            }
+            
+            .scores-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="title">AI Stock Analyzer</h1>
+            <p class="subtitle">Advanced AI-powered investment analysis with real-time market data</p>
+        </div>
+
+        <div class="main-card glow-effect">
+            <div class="input-section">
+                <div class="input-group">
+                    <input type="text" id="tickerInput" class="input-field" placeholder="Enter stock ticker (e.g., AAPL)" maxlength="10">
+                </div>
+                <button onclick="analyzeStock()" id="analyzeBtn" class="analyze-btn">
+                    <span>Analyze Stock</span>
+                </button>
+            </div>
+
+            <div class="popular-stocks">
+                <h3 class="section-title">Popular Stocks</h3>
+                <div class="stock-grid">
+                    <button class="stock-btn" onclick="analyzePopularStock('AAPL')">AAPL</button>
+                    <button class="stock-btn" onclick="analyzePopularStock('MSFT')">MSFT</button>
+                    <button class="stock-btn" onclick="analyzePopularStock('GOOGL')">GOOGL</button>
+                    <button class="stock-btn" onclick="analyzePopularStock('AMZN')">AMZN</button>
+                    <button class="stock-btn" onclick="analyzePopularStock('TSLA')">TSLA</button>
+                    <button class="stock-btn" onclick="analyzePopularStock('NVDA')">NVDA</button>
+                    <button class="stock-btn" onclick="analyzePopularStock('META')">META</button>
+                    <button class="stock-btn" onclick="analyzePopularStock('NFLX')">NFLX</button>
+                    <button class="stock-btn" onclick="analyzePopularStock('AMD')">AMD</button>
+                    <button class="stock-btn" onclick="analyzePopularStock('INTC')">INTC</button>
+                    <button class="stock-btn" onclick="analyzePopularStock('CRM')">CRM</button>
+                    <button class="stock-btn" onclick="analyzePopularStock('ORCL')">ORCL</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="result" class="result-container"></div>
+    </div>
+
+    <script>
+        async function analyzeStock() {
+            const ticker = document.getElementById('tickerInput').value.trim().toUpperCase();
+            const button = document.getElementById('analyzeBtn');
+            const resultDiv = document.getElementById('result');
+            
+            if (!ticker) {
+                showError('Please enter a stock ticker symbol');
+                return;
+            }
+            
+            // Update button state
+            button.disabled = true;
+            button.innerHTML = '<span>Analyzing...</span>';
+            
+            // Show loading animation
+            resultDiv.className = 'result-container show';
+            resultDiv.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Analyzing ${ticker} with AI...</div>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch('http://localhost:3001/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ ticker: ticker })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || 'Analysis failed');
+                }
+                
+                // Add delay for smooth transition
+                setTimeout(() => displayResult(data), 500);
+                
+            } catch (error) {
+                setTimeout(() => {
+                    resultDiv.innerHTML = `<div class="error">⚠️ Error: ${error.message}</div>`;
+                }, 500);
+            } finally {
+                button.disabled = false;
+                button.innerHTML = '<span>Analyze Stock</span>';
+            }
+        }
+        
+        function displayResult(data) {
+            const isBuy = data.recommendation === 'BUY TODAY';
+            const recommendationClass = isBuy ? 'recommendation-buy' : 'recommendation-sell';
+            
+            const priceChangeClass = data.marketData.priceChange >= 0 ? 'positive' : 'negative';
+            const priceChangeText = data.marketData.priceChange >= 0 ? '+' : '';
+            
+            const reasoningHtml = data.reasoning.map((reason, index) => 
+                `<div class="reason-item" style="animation-delay: ${index * 0.1}s">
+                    <span class="reason-bullet">▶</span>
+                    <span class="reason-text">${reason}</span>
+                </div>`
+            ).join('');
+            
+            const html = `
+                <div class="result-card">
+                    <div class="company-header">
+                        <div class="company-name">${data.companyName}</div>
+                        <div class="ticker-symbol">${data.ticker}</div>
+                    </div>
+
+                    <div class="price-section">
+                        <div class="current-price">$${data.price.toFixed(2)}</div>
+                        <div class="price-change ${priceChangeClass}">
+                            ${priceChangeText}${data.marketData.priceChangePercent.toFixed(2)}% 
+                            (${priceChangeText}$${Math.abs(data.marketData.priceChange).toFixed(2)})
+                        </div>
+                    </div>
+                    
+                    <div class="scores-grid">
+                        <div class="score-card">
+                            <div class="score-label">Fundamental</div>
+                            <div class="score-value ${getScoreClass(data.fundamentalScore)}">${data.fundamentalScore}/5</div>
+                        </div>
+                        <div class="score-card">
+                            <div class="score-label">Technical</div>
+                            <div class="score-value ${getScoreClass(data.technicalScore)}">${data.technicalScore}/5</div>
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation-card ${recommendationClass}">
+                        ${data.recommendation}
+                    </div>
+                    
+                    <div class="analysis-details">
+                        <div class="details-title">AI Analysis Summary</div>
+                        ${reasoningHtml}
+                    </div>
+                    
+                    <div class="timestamp">
+                        🤖 Analysis completed: ${new Date(data.timestamp).toLocaleString()}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('result').innerHTML = html;
+        }
+        
+        function getScoreClass(score) {
+            if (score >= 4) return 'score-excellent';
+            if (score >= 3) return 'score-good';
+            if (score >= 2) return 'score-average';
+            return 'score-poor';
+        }
+        
+        function showError(message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = 'result-container show';
+            resultDiv.innerHTML = `<div class="error">⚠️ ${message}</div>`;
+        }
+        
+        // Function to analyze popular stocks
+        function analyzePopularStock(ticker) {
+            document.getElementById('tickerInput').value = ticker;
+            analyzeStock();
+        }
+        
+        // Allow Enter key to trigger analysis
+        document.getElementById('tickerInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                analyzeStock();
+            }
+        });
+
+        // Add loading animation on page load
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body>
+</html>
